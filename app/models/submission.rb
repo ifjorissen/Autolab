@@ -388,17 +388,32 @@ private
 
   # Returns a map from problem name (string) to score value (float)
   def raw_score_input(include_unreleased)
-    v = {}
+    v = {} # dictionary of scores
+    a = {} # dictionary of annotation values
 
+    problem_id_to_name = assessment.problem_id_to_name
+    
     # default score value is 0.0
-    assessment.problems.each { |problem| v[problem.name] = 0.0 }
+    assessment.problems.each do |problem| 
+      v[problem.name] = 0.0
+      a[problem.name] = 0.0
+    end
+
+
+    self.annotations.each do |annotation|
+      a_attributes = annotation.parse_text_to_attributes
+      unless a_attributes["problem_id"].nil? or a_attributes["value"].nil?
+        problem_name = problem_id_to_name[a_attributes["problem_id"]]
+        a[problem_name] += a_attributes["value"]
+      end
+    end
 
     # populate score values from scores
-    problem_id_to_name = assessment.problem_id_to_name
     scores.each do |score|
       if score.score && (include_unreleased || score.released?)
+        problem_name = problem_id_to_name[score.problem_id]
         # will be a non-nil float
-        v[problem_id_to_name[score.problem_id]] = score.score
+        v[problem_name] = score.score + a[problem_name]
       end
     end
 
@@ -408,6 +423,7 @@ private
 
   # Returns a valid raw score (float) or throws an exception otherwise
   def raw_score!(options)
+
     scores = raw_score_input options[:include_unreleased]
 
     begin

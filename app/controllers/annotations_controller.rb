@@ -42,6 +42,7 @@ class AnnotationsController < ApplicationController
         format.js { head :bad_request }
       end
     end
+    submission.invalidate_raw_score
   end
 
   action_auth_level :show, :course_assistant
@@ -64,11 +65,13 @@ class AnnotationsController < ApplicationController
         format.js { head :bad_request }
       end
     end
+    submission.invalidate_raw_score
   end
 
   # DELETE /:course/annotations/1.js
   action_auth_level :destroy, :course_assistant
   def destroy
+    @annotation.submission.invalidate_raw_score
     @annotation.destroy
 
     respond_to do |format|

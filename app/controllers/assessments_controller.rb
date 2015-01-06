@@ -845,13 +845,19 @@ class AssessmentsController < ApplicationController
     results = @submissions.select("submissions.id AS submission_id",
         "problems.id AS problem_id",
         "scores.id AS score_id",
-        "scores.*")
+        "scores.*",
+        "annotations.*")
       .joins("LEFT JOIN problems ON 
         submissions.assessment_id = problems.assessment_id")
       .joins("LEFT JOIN scores ON 
         (submissions.id = scores.submission_id 
         AND problems.id = scores.problem_id)")
+      .joins("LEFT JOIN annotations ON
+        (submissions.id = annotations.submission_id 
+        AND problems.id = annotations.problem_id)")
 
+    print "\n\n---"
+    print results.inspect
     # Process them to get into a format we want. 
     @scores = {}  
     for result in results do
@@ -860,6 +866,14 @@ class AssessmentsController < ApplicationController
         @scores[subId]= {}
       end
       
+      print "\n\n----->ins"
+      print result.class
+      print "-\nannot: "
+      print result.annotations
+      print "-\n score:"
+      print result["score"].to_f
+      print "<-----"
+
       @scores[subId][result["problem_id"].to_i] = {
         :score=>result["score"].to_f,
         :feedback=>result["feedback"],
