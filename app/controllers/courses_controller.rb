@@ -220,7 +220,7 @@ class CoursesController < ApplicationController
   action_auth_level :sudo, :instructor
   def sudo
     session[:sudo] = nil
-    redirect_to([:sudo, @course, @cud]) && return
+    redirect_to([@course, @cud, :sudo]) && return
   end
 
   action_auth_level :reload, :instructor
