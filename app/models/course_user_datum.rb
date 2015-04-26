@@ -49,12 +49,12 @@ class CourseUserDatum < ActiveRecord::Base
   end
 
   def after_create
-    COURSE_LOGGER.log("CourseUserDatum CREATED for #{user.email}:" \
+    COURSE_LOGGER.log("CourseUserDatum CREATED for #{email}:" \
       "{#{nickname},#{major},#{lecture},#{section}}")
   end
 
   def after_update
-    COURSE_LOGGER.log("CourseUserDatum UPDATED for #{user.email}:" \
+    COURSE_LOGGER.log("CourseUserDatum UPDATED for #{email}:" \
       "{#{nickname},#{major},#{lecture},#{section}}")
   end
 
@@ -155,8 +155,6 @@ class CourseUserDatum < ActiveRecord::Base
   #
 
   delegate :administrator?, to: :user
-
-  delegate :email, to: :user
 
   delegate :first_name, to: :user
 
