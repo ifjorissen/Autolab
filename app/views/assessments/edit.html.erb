@@ -15,10 +15,34 @@
     <%= link_to tab_name.titleize, edit_course_assessment_path(@course, @assessment) + "/#{tab_name}" %>
   </li>
 <% end %>
+<% if @assessment.has_autograder? %>
+  <% tab_name = "autograder" %>
+  <%= (tab_name == params[:active_tab]) ? tag(:li, class: :active) : tag(:li) %>
+    <%= link_to tab_name.titleize, edit_course_assessment_path(@course, @assessment) + "/#{tab_name}" %>
+  </li>
+<% end %>
+<% if @assessment.has_scoreboard? %>
+  <% tab_name = "scoreboard" %>
+  <%= (tab_name == params[:active_tab]) ? tag(:li, class: :active) : tag(:li) %>
+    <%= link_to tab_name.titleize, edit_course_assessment_path(@course, @assessment) + "/#{tab_name}" %>
+  </li>
+<% end %>
+<% if @assessment.has_svn? %>
+  <li>
+    <%= link_to "SVN", [:admin_svn, @course, @assessment] %>
+  </li>
+<% end %>
+<% if @assessment.has_groups? %>
+  <li>
+    <%= link_to "Groups", [@course, @assessment, :groups] %>
+  </li>
+<% end %>
 </ul>
 
 <div class="row">
   <div class="col-md-6">
+  <% if ["basic", "handin", "penalties", "problems"].include? params[:active_tab] %>
+
     <%= form_for [ @course, @assessment ], url: edit_course_assessment_path(@course, @assessment) + "/#{params[:active_tab]}", builder: FormBuilderWithDateTimeInput do |f| %>
       <% if @course.errors.any? %>
           <ul>
@@ -38,5 +62,8 @@
 
       <%= render "edit_#{params[:active_tab]}", f: f %>
     <% end %>
+  <% else %>
+      <%= render "edit_#{params[:active_tab]}" %>
+  <% end %>
   </div>
 </div>
